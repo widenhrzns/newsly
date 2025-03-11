@@ -1,0 +1,33 @@
+{
+  "name": "newsly",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "live-server",
+    "build": "rollup -c --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/widenhrzns/newsly.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/widenhrzns/newsly/issues"
+  },
+  "homepage": "https://github.com/widenhrzns/newsly#readme",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0",
+    "live-server": "^1.2.2",
+    "rollup": "^4.35.0",
+    "rollup-plugin-import-css": "^3.5.8"
+  },
+  "dependencies": {
+    "on-change": "^5.0.1"
+  }
+}
