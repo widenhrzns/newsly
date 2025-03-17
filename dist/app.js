@@ -5172,6 +5172,26 @@
 	  }
 	}
 
+	class NewsList extends DivComponent {
+	  constructor(appState, parentState) {
+	    super();
+	    this.appState = appState;
+	    this.parentState = parentState;
+	  }
+
+	  render() {
+	    if (this.parentState.loading) {
+	      this.element.innerHTML = `<div class='card-list__loader'>Загрузка...</div>`;
+	      return this.element;
+	    }
+	    this.element.classList.add("news-list");
+	    this.element.innerHTML = `
+    <h1>Найдено новостей — ${this.parentState.totalResults}</h1>
+    `;
+	    return this.element;
+	  }
+	}
+
 	class MainView extends AbstractView {
 	  state = {
 	    list: [],
@@ -5187,12 +5207,21 @@
 	    this.appState = appState;
 	    this.setTitle("Newsly - лента новостей");
 	    this.appState = onChange(this.appState, this.appStateHook.bind(this));
+	    this.state = onChange(this.state, this.stateHook.bind(this));
 	    this.loadList();
 	  }
 
 	  appStateHook(path) {
 	    if (path === "readLater") {
 	      this.render();
+	    }
+	  }
+
+	  stateHook(path) {
+	    if (path === "list" || path === "loading") {
+	      setTimeout(() => {
+	        this.render();
+	      }, 2000);
 	    }
 	  }
 
@@ -5207,10 +5236,11 @@
 	    try {
 	      this.state.loading = true;
 	      const data = await this.getNews();
+	      this.state.loading = false;
 	      if (data.status !== "ok") {
 	        throw new Error("Не удалось загрузить ленту");
 	      }
-	      this.state.loading = false;
+	      this.state.totalResults = data.totalResults;
 	      this.state.list = data.articles;
 	    } catch (error) {
 	      console.warn(error);
@@ -5219,6 +5249,7 @@
 
 	  render() {
 	    const main = document.createElement("div");
+	    main.append(new NewsList(this.appState, this.state).render());
 
 	    this.app.innerHTML = "";
 	    this.app.append(main);

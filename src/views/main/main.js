@@ -2,6 +2,7 @@ import onChange from "on-change";
 import { Temporal } from "temporal-polyfill";
 import { AbstractView } from "../../common/view.js";
 import { Header } from "../../components/header/header.js";
+import { NewsList } from "../../components/news-list/news-list.js";
 import "./main.css";
 
 export class MainView extends AbstractView {
@@ -19,12 +20,21 @@ export class MainView extends AbstractView {
     this.appState = appState;
     this.setTitle("Newsly - лента новостей");
     this.appState = onChange(this.appState, this.appStateHook.bind(this));
+    this.state = onChange(this.state, this.stateHook.bind(this));
     this.loadList();
   }
 
   appStateHook(path) {
     if (path === "readLater") {
       this.render();
+    }
+  }
+
+  stateHook(path) {
+    if (path === "list" || path === "loading") {
+      setTimeout(() => {
+        this.render();
+      }, 2000);
     }
   }
 
@@ -39,10 +49,11 @@ export class MainView extends AbstractView {
     try {
       this.state.loading = true;
       const data = await this.getNews();
+      this.state.loading = false;
       if (data.status !== "ok") {
         throw new Error("Не удалось загрузить ленту");
       }
-      this.state.loading = false;
+      this.state.totalResults = data.totalResults;
       this.state.list = data.articles;
     } catch (error) {
       console.warn(error);
@@ -51,6 +62,7 @@ export class MainView extends AbstractView {
 
   render() {
     const main = document.createElement("div");
+    main.append(new NewsList(this.appState, this.state).render());
 
     this.app.innerHTML = "";
     this.app.append(main);
