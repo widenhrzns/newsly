@@ -28,6 +28,7 @@
     "rollup-plugin-import-css": "^3.5.8"
   },
   "dependencies": {
-    "on-change": "^5.0.1"
+    "on-change": "^5.0.1",
+    "temporal-polyfill": "^0.2.5"
   }
 }
