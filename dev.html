@@ -6,18 +6,26 @@
     <title>Document</title>
   </head>
   <body>
-    <div class="header">
-      <a class="logo" href="#">NEWSLY</a>
-      <div class="menu">
-        <a class="menu__item" href="#search">
-          <img src="./static/icons/search.svg" alt="Иконка поиска" />
-          Поиск
-        </a>
-        <a class="menu__item" href="#readLater">
-          <img src="./static/icons/search.svg" alt="Иконка поиска" />
-          Закладки
-          <div class="header__counter">0</div>
-        </a>
+    <div class="news-card">
+      <button>
+        <img
+          src="./static/icons/favorites.svg"
+          alt="Иконка добавить в закладки"
+        />
+      </button>
+      <div class="news-card__image">
+        <img class="news-card__image" src="#" alt="Фотографии из новости" />
+      </div>
+      <div class="news-card__up">
+        <div class="news-card__info">
+          <div class="news-card__author">___</div>
+          <div class="news-card__source">___</div>
+        </div>
+        <img src="./static/icons/favorites.svg" alt="Иконка закладки" />
+      </div>
+      <div class="news-card__title">___</div>
+      <div class="news-card__description">
+        <a href="#" target="_blank">[Читать далее]</a>
       </div>
     </div>
   </body>

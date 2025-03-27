@@ -5172,6 +5172,67 @@
 	  }
 	}
 
+	class NewsCard extends DivComponent {
+	  constructor(appState, cardState) {
+	    super();
+	    this.appState = appState;
+	    this.cardState = cardState;
+	  }
+
+	  #addToReadLater() {
+	    this.appState.readLater.push(this.cardState);
+	  }
+
+	  #deleteFromReadLater() {
+	    this.appState.readLater = this.appState.readLater.filter((news) => {
+	      news.url !== this.cardState.url;
+	    });
+	  }
+
+	  render() {
+	    const existInReadLater = this.appState.readLater.find((news) => {
+	      news.url === this.cardState.url;
+	    });
+	    // console.log(existInReadLater);
+	    this.element.classList.add("news-card");
+	    this.element.innerHTML = `
+    <button class="button_add ${existInReadLater ? "button_add_active" : ""}">
+        <img
+          src="./static/icons/${
+            existInReadLater ? "favorites-white" : "favorites"
+          }.svg"
+          alt="Иконка добавить в закладки"
+        />
+      </button>
+    <div class="news-card__image">
+      <img src="${this.cardState.urlToImage}" alt="Фотография из новости" />
+    </div>
+    <div class="news-card__title">${this.cardState.title}</div>
+    <div class="news-card__info">
+      <div class="news-card__author">${
+        this.cardState.author === null ? "———" : this.cardState.author
+      }</div>
+      <div class="news-card__source">${this.cardState.source.name}</div>
+    </div>
+    <div class="news-card__description">${
+      this.cardState.description
+    } <a href="${this.cardState.url}" target="_self">[Читать далее]</a></div>
+    `;
+
+	    if (existInReadLater) {
+	      this.element
+	        .querySelector("button")
+	        .addEventListener("click", this.#deleteFromReadLater.bind(this));
+	    } else {
+	      this.element
+	        .querySelector("button")
+	        .addEventListener("click", this.#addToReadLater.bind(this));
+	    }
+
+	    return this.element;
+	  }
+	}
+
 	class NewsList extends DivComponent {
 	  constructor(appState, parentState) {
 	    super();
@@ -5181,13 +5242,36 @@
 
 	  render() {
 	    if (this.parentState.loading) {
-	      this.element.innerHTML = `<div class='card-list__loader'>Загрузка...</div>`;
+	      this.element.innerHTML = `
+  <div class="loading__wrapper">
+    <span class="letter letter1">L</span>
+    <span class="letter letter2">o</span>
+    <span class="letter letter3">a</span>
+    <span class="letter letter4">d</span>
+    <span class="letter letter5">i</span>
+    <span class="letter letter6">n</span>
+    <span class="letter letter7">g</span>
+    <span class="letter letter8">.</span>
+    <span class="letter letter9">.</span>
+    <span class="letter letter10">.</span>
+  </div>
+
+      `;
 	      return this.element;
 	    }
 	    this.element.classList.add("news-list");
 	    this.element.innerHTML = `
-    <h1>Найдено новостей — ${this.parentState.totalResults}</h1>
+       <div class="news-list__title">
+      Лента новостей
+      <div class="title__date">${this.parentState.date}</div>
+    </div>
     `;
+	    for (const cardState of this.parentState.list) {
+	      const newsCard = new NewsCard(this.appState, cardState).render();
+	      this.element.append(newsCard);
+	      // console.log(this.parentState);
+	      // console.log(this.appState);
+	    }
 	    return this.element;
 	  }
 	}
@@ -5213,21 +5297,20 @@
 
 	  appStateHook(path) {
 	    if (path === "readLater") {
+	      console.log(this.appState.readLater);
 	      this.render();
 	    }
 	  }
 
 	  stateHook(path) {
 	    if (path === "list" || path === "loading") {
-	      setTimeout(() => {
-	        this.render();
-	      }, 2000);
+	      this.render();
 	    }
 	  }
 
 	  async getNews() {
 	    const response = await fetch(
-	      `https://newsapi.org/v2/everything?q=а&language=ru&from=2025-03-16&apiKey=51e43ca151254a9987a83b9d0530ebd6`
+	      `https://newsapi.org/v2/everything?q=а&language=ru&from=${this.state.date}&apiKey=51e43ca151254a9987a83b9d0530ebd6`
 	    );
 	    return response.json();
 	  }
@@ -5240,6 +5323,7 @@
 	      if (data.status !== "ok") {
 	        throw new Error("Не удалось загрузить ленту");
 	      }
+	      // console.log(data.articles);
 	      this.state.totalResults = data.totalResults;
 	      this.state.list = data.articles;
 	    } catch (error) {
@@ -5254,7 +5338,6 @@
 	    this.app.innerHTML = "";
 	    this.app.append(main);
 	    this.renderHeader();
-	    // this.appState.readLater.push("123");
 	  }
 
 	  renderHeader() {

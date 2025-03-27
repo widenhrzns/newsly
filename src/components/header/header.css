@@ -2,6 +2,8 @@
   display: flex;
   justify-content: space-between;
   margin: 15px 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--black);
 }
 
 .header a {

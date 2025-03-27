@@ -26,21 +26,20 @@ export class MainView extends AbstractView {
 
   appStateHook(path) {
     if (path === "readLater") {
+      console.log(this.appState.readLater);
       this.render();
     }
   }
 
   stateHook(path) {
     if (path === "list" || path === "loading") {
-      setTimeout(() => {
-        this.render();
-      }, 2000);
+      this.render();
     }
   }
 
   async getNews() {
     const response = await fetch(
-      `https://newsapi.org/v2/everything?q=а&language=ru&from=2025-03-16&apiKey=51e43ca151254a9987a83b9d0530ebd6`
+      `https://newsapi.org/v2/everything?q=а&language=ru&from=${this.state.date}&apiKey=51e43ca151254a9987a83b9d0530ebd6`
     );
     return response.json();
   }
@@ -53,6 +52,7 @@ export class MainView extends AbstractView {
       if (data.status !== "ok") {
         throw new Error("Не удалось загрузить ленту");
       }
+      // console.log(data.articles);
       this.state.totalResults = data.totalResults;
       this.state.list = data.articles;
     } catch (error) {
@@ -67,7 +67,6 @@ export class MainView extends AbstractView {
     this.app.innerHTML = "";
     this.app.append(main);
     this.renderHeader();
-    // this.appState.readLater.push("123");
   }
 
   renderHeader() {
